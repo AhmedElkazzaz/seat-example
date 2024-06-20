@@ -97,7 +97,7 @@ jobs:
         with:
           provenance: true
           pull: true
-          push: true
+          push: false
           outputs: |
             type=oci,dest=./${{ env.APP_NAME }}-oci-${{inputs.platform}}.tar
           file: ./app/Dockerfile
