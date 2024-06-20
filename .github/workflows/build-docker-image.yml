@@ -95,9 +95,9 @@ jobs:
         id: image_build
         uses: docker/build-push-action@v5
         with:
-          provenance: false
+          provenance: true
           pull: true
-          push: false
+          push: true
           outputs: |
             type=oci,dest=./${{ env.APP_NAME }}-oci-${{inputs.platform}}.tar
           file: ./app/Dockerfile
