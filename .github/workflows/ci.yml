@@ -31,7 +31,7 @@ on:
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ghcr.io/eclipse-velocitas/devcontainer-base-images/python:v0.3
     name: Run unit tests and linters
 
@@ -125,7 +125,7 @@ jobs:
             results/Documentation/renderer/*
 
   get-app-name:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Get App-Name
     outputs:
       app_name: ${{ steps.export-app-name.outputs.app_name }}
@@ -149,7 +149,7 @@ jobs:
 
   run-integration-tests:
     name: Run Integration Tests (${{ needs.get-app-name.outputs.app_name }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ghcr.io/eclipse-velocitas/devcontainer-base-images/python:v0.3
     needs: [get-app-name, build-image-amd64]
     env:
@@ -242,7 +242,7 @@ jobs:
             results/Documentation/renderer/*
 
   merge-test-results:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: run-integration-tests
     steps:
       - name: Merge Artifacts
