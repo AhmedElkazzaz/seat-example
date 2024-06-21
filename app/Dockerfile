@@ -15,13 +15,13 @@
 # syntax=docker/dockerfile:1.2
 
 # Build stage, to create the executable
-FROM --platform=$TARGETPLATFORM ghcr.io/eclipse-velocitas/devcontainer-base-images/python:v0.3.3 as builder
+FROM --platform=$TARGETPLATFORM ghcr.io/eclipse-velocitas/devcontainer-base-images/python:v0.3 as builder
 ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y python3-dev
 
 COPY ./.velocitas.json /workspace/.velocitas.json
-COPY ./app /app
+COPY ./app /workspace/app
 
 # Remove this installation for Arm64 once staticx has a prebuilt wheel for Arm64
 RUN /bin/bash -c 'set -ex && \
@@ -35,30 +35,30 @@ RUN /bin/bash -c 'set -ex && \
 RUN pip3 install --no-cache-dir pyinstaller==5.9.0 \
     && pip3 install --no-cache-dir patchelf==0.17.0.0 \
     && pip3 install --no-cache-dir staticx \
-    && pip3 install --no-cache-dir -r . /app/requirements.txt \
-    && pip3 install --no-cache-dir -r ./app/requirements-links.txt
+    && pip3 install --no-cache-dir -r ./workspace/app/requirements.txt \
+    && pip3 install --no-cache-dir -r ./workspace/app/requirements-links.txt
 
+WORKDIR /workspace
 
-RUN velocitas init -v
+RUN velocitas init
 
-WORKDIR /app
+WORKDIR /workspace/app
 
-RUN pyinstaller --clean -F -s -p src src/main.py
+RUN pyinstaller --clean -F -s src/main.py
 
-WORKDIR  /app/dist
+WORKDIR /workspace/app/dist
 
 RUN staticx main run-exe
 
 # Runner stage, to copy the executable
-FROM scratch
+FROM scratch as runner
 
-COPY --from=builder . /app/dist/run-exe /dist/
+COPY --from=builder ./workspace/app/dist/run-exe /app
 
 WORKDIR /tmp
-WORKDIR /dist
 
-ENV PATH="/dist:$PATH"
+ENV PATH="/:$PATH"
 
 LABEL org.opencontainers.image.source="https://github.com/eclipse-velocitas/vehicle-app-python-template"
 
-CMD ["./run-exe"]
+CMD ["/app"]
