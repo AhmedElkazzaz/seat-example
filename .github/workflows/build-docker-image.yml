@@ -28,7 +28,7 @@ on:
 jobs:
   build-image:
     name: "Building image (${{ inputs.app_name }})"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ghcr.io/eclipse-velocitas/devcontainer-base-images/python:v0.3
     outputs:
       archs: ${{ steps.set_args.outputs.archs_matrix }}
@@ -166,7 +166,7 @@ jobs:
 
   scan-image:
     name: "Scan image (${{ inputs.app_name }}-${{ matrix.arch }})"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build-image
     strategy:
       matrix: ${{fromJSON(needs.build-image.outputs.archs)}}
